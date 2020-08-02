@@ -52,7 +52,8 @@ app.post('/comment', function (req, res) {
 				time: moment().utc().format('D MMMM YYYY h:mm A Z')
 			};
 			
-			if (req.cookies['tw-comments-login'] && loginCookies.includes(req.cookies['tw-comments-login'])) {
+			if (req.body['tw-comments-login'] && loginCookies.includes(req.body['tw-comments-login'])) {
+				console.log('Logged in'); 
 				document.isTrueWinter = true;
 			}
 
@@ -94,7 +95,7 @@ app.post('/reply', function (req, res) {
 			time: moment().utc().format('D MMMM YYYY h:mm A Z')
 		};
 		
-		if (req.cookies['tw-comments-login'] && loginCookies.includes(req.cookies['tw-comments-login'])) {
+		if (req.body['tw-comments-login'] && loginCookies.includes(req.body['tw-comments-login'])) {
 			document.isTrueWinter = true;
 		}
 
@@ -125,6 +126,7 @@ app.post('/reply', function (req, res) {
 });
 
 app.get('/comments/:post', function(req, res) {
+	console.log(req.cookies);
 	if (!req.params.post) {
 		return res.json({success: false, message: 'Post parameter required'});
 	}
@@ -172,6 +174,8 @@ var logins = {
 };
 
 app.get('/login', function(req, res) {
+	if (req.cookies['tw-comments-login'] && loginCookies.includes(req.cookies['tw-comments-login'])) return res.end('Already logged in');
+
 	res.end('<form method="post"><input type="text" name="username" placeholder="Username"><br><input type="password" name="password" placeholder="Password"><br><button type="submit">Login</button></form>');
 });
 
@@ -184,12 +188,11 @@ app.post('/login', function(req, res) {
 	if (req.cookies['tw-comments-login'] && loginCookies.includes(req.cookies['tw-comments-login'])) return res.end('Already logged in');
 	if (logins[req.body.username] && logins[req.body.username] === req.body.password) {
 		const cookieValue = md5(uuid.v4())+md5(uuid.v4())+md5(uuid.v4());
-		res.cookie('tw-comments-login', cookieValue, { expires: new Date(Date.now() + 5000000000) });
-		res.cookie('tw-comments-logged-in', 'true', { domain: '.truewinter.dev', expires: new Date(Date.now() + 5000000000) });
+		res.cookie('tw-comments-login', cookieValue, { domain: '.truewinter.dev', expires: new Date(Date.now() + 5000000000) });
 		var lCTmp = JSON.parse(loginCookies);
-		console.log(lCTmp);
+		//console.log(lCTmp);
 		lCTmp.push(cookieValue);
-		console.log(lCTmp);
+		//console.log(lCTmp);
 		fs.writeFileSync('./login-cookies.json', JSON.stringify(lCTmp));
 		loginCookies = fs.readFileSync('./login-cookies.json');
 		res.end('OK');
