@@ -169,6 +169,56 @@ app.get('/comments/:post', function(req, res) {
 	
 });
 
+
+app.get('/count', function(req,res) {
+	var commentArr = [];
+	const client = new MongoClient(uri, { useNewUrlParser: true });
+	
+	client.connect(err => {
+		const collection = client.db("tw-comments-01").collection("comments");
+		
+		collection.aggregate(
+			{ $group: { "_id": "$post", "count": { $sum: 1 } } }, 
+			{ $project: { "post": "$_id", "count": 1 } }
+		).toArray(function(err, data) {
+			if (err) {
+				return res.json({success: false, message: 'Error while fetching data'});
+				return console.log(err);
+			}
+			console.log(data);
+			commentArr = data;
+			
+			const collection2 = client.db("tw-comments-01").collection("replies");
+		
+			collection2.aggregate(
+				{ $group: { "_id": "$post", "count": { $sum: 1 } } }, 
+				{ $project: { "post": "$_id", "count": 1 } }
+			).toArray(function(err2, data2) {
+				if (err2) {
+					return res.json({success: false, message: 'Error while fetching data'});
+					return console.log(err2);
+				}
+				//console.log(data2);
+				//commentArr = data;
+				for (var i = 0; i < data2.length; i++) {
+					for (var j = 0; j < commentArr.length; j++) {
+						if (commentArr[j]._id === data2[i]._id) {
+							//console.log(commentArr[j]._id);
+							//console.log(data2[i]._id);
+							//console.log('they equal');
+							commentArr[j].count += data2[i].count;
+							//console.log(commentArr);
+							res.json({success: true, data: commentArr});
+						}
+					}
+				}
+			});
+		});
+		//res.end();
+	});
+});
+
+
 var logins = {
 	'nicholis': '***REMOVED***'
 };
