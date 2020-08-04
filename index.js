@@ -22,6 +22,43 @@ const googleRecaptcha = new GoogleRecaptcha({secret: '***REMOVED***-Ak1L'});
 const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://tw-comments:Ts9Q6Xzm7UXaD90X@tw-comments-01.24wsr.gcp.mongodb.net/tw-comments-01?retryWrites=true&w=majority";
 
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey('***REMOVED***');
+var sgFrom = 'noreply@e.truewinter.dev';
+var sgTo = '***REMOVED***';
+
+function sendMail(options) {
+	if (!options) return console.error('No options');
+	if (typeof options !== 'object') return console.error('Options must be an object');
+	if (!(options.id && options.name && options.name && options.comment && options.time)) return console.error('Required options not provided');
+	
+	var id = options.id;
+	var type = 'comment';
+	
+	if (options.in_reply_to) {
+		id = `${options.id} (R: ${options.in_reply_to})`;
+		type = `reply to ${options.in_reply_to}`;
+	}
+	
+	var template = `<h1>New comment</h1><hr><h3>A new ${type} on ${options.post} was posted.</h3><br>Name: ${options.name}<br>Time: ${options.time}<br>Comment: ${options.comment}<br><hr><br>If the above comment should not be allowed on the blog, manually delete it from the database (moderation system coming soon)`;
+	
+	const msg = {
+		to: sgTo,
+		from: sgFrom,
+		subject: `New comment on TrueWinter blog (${id})`,
+		html: template,
+	};
+	sgMail.send(msg).then(() => {}, error => {
+		console.error(error);
+
+		if (error.response) {
+			console.error(error.response.body)
+		}
+	});
+}
+
+
 app.post('/comment', function (req, res) {
 	//console.log(req.body);
 	const client = new MongoClient(uri, { useNewUrlParser: true });
@@ -56,6 +93,14 @@ app.post('/comment', function (req, res) {
 				console.log('Logged in'); 
 				document.isTrueWinter = true;
 			}
+			
+			sendMail({
+				post: document.post,
+				id: document.id,
+				name: document.name,
+				comment: document.comment,
+				time: document.time
+			});
 
 			collection.insertOne(document).then(function() {
 				console.log('data inserted');
@@ -98,6 +143,15 @@ app.post('/reply', function (req, res) {
 		if (req.body['tw-comments-login'] && loginCookies.includes(req.body['tw-comments-login'])) {
 			document.isTrueWinter = true;
 		}
+		
+		sendMail({
+			post: document.post,
+			id: document.id,
+			in_reply_to: document.in_reply_to,
+			name: document.name,
+			comment: document.comment,
+			time: document.time
+		});
 
 		collection.insertOne(document).then(function() {
 			console.log('data inserted');
