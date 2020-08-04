@@ -236,7 +236,7 @@ app.get('/count', function(req,res) {
 			{ $project: { "post": "$_id", "count": 1 } }
 		).toArray(function(err, data) {
 			if (err) {
-				return res.json({success: false, message: 'Error while fetching data'});
+				res.json({success: false, message: 'Error while fetching data'});
 				return console.log(err);
 			}
 			console.log(data);
@@ -249,7 +249,7 @@ app.get('/count', function(req,res) {
 				{ $project: { "post": "$_id", "count": 1 } }
 			).toArray(function(err2, data2) {
 				if (err2) {
-					return res.json({success: false, message: 'Error while fetching data'});
+					res.json({success: false, message: 'Error while fetching data'});
 					return console.log(err2);
 				}
 				//console.log(data2);
@@ -270,6 +270,7 @@ app.get('/count', function(req,res) {
 						}
 						if ((j === commentArr.length - 1) && (i === data2.length - 1)) {
 							res.json({success: true, data: commentArr});
+							client.close();
 						}
 					}
 				}
