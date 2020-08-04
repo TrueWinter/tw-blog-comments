@@ -254,14 +254,21 @@ app.get('/count', function(req,res) {
 				}
 				//console.log(data2);
 				//commentArr = data;
-				for (var i = 0; i < data2.length; i++) {
-					for (var j = 0; j < commentArr.length; j++) {
-						if (commentArr[j]._id === data2[i]._id) {
+				for (var j = 0; j < data.length; j++) {
+					for (var i = 0; i < data2.length; i++) {
+						if (data[j]._id === data2[i]._id) {
 							//console.log(commentArr[j]._id);
 							//console.log(data2[i]._id);
 							//console.log('they equal');
 							commentArr[j].count += data2[i].count;
 							//console.log(commentArr);
+							console.log(j);
+							console.log(commentArr.length);
+							console.log('-');
+							console.log(i);
+							console.log(data2.length);
+						}
+						if ((j === commentArr.length - 1) && (i === data2.length - 1)) {
 							res.json({success: true, data: commentArr});
 						}
 					}
