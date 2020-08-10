@@ -1,0 +1,45 @@
+var config = {
+	recaptchaSecret: '',
+	pushover: {
+		user: '',
+		token: ''
+	},
+	discordWebhook: '',
+	akismet: {
+		key: '',
+		blog: ''
+	},
+	mongo: {
+		dev: {
+			uri: '',
+			dbName: ''
+		},
+		prod: {
+			uri: '',
+			dbName: ''
+		}
+	},
+	sendgrid: {
+		apiKey: '',
+		from: '',
+		to: ''
+	},
+	apiURL: {
+		dev: '',
+		prod: ''
+	},
+	logins: {
+		dev: {
+			'username': 'password'
+		},
+		prod: {
+			'username': 'password'
+		}
+	},
+	pagination: {
+		enabled: true,
+		perPage: 5
+	}
+};
+
+module.exports = config;
