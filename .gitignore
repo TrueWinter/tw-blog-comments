@@ -1,4 +1,4 @@
 node_modules
 login-cookies.json
 -DEV
-config.js.secret
+config.js
