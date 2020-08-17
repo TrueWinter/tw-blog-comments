@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@sendgrid/mail": "^7.2.2",
     "akismet-api": "^5.0.0",
