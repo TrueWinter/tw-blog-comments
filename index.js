@@ -523,7 +523,7 @@ if (dev) {
 }
 app.get('/login', function(req, res) {
 	if (req.cookies['tw-comments-login'] && loginCookies.includes(req.cookies['tw-comments-login'])) return res.end('Already logged in');
-
+	res.set('Content-Type', 'text/html');
 	res.end('<form method="post"><input type="text" name="username" placeholder="Username"><br><input type="password" name="password" placeholder="Password"><br><button type="submit">Login</button></form>');
 });
 
