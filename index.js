@@ -514,6 +514,10 @@ app.get('/count', function(req,res) {
 	});
 });
 
+app.get('/uptimecheck', function(req, res) {
+	res.end('OK');
+});
+
 var logins;
 
 if (dev) {
