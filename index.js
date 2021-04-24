@@ -614,6 +614,7 @@ app.get('/moderate/:type/:id', function (req, res) {
 				notSpamBtn = `<form method="POST" action="/moderate" id="notSpamForm"><input type="hidden" name="action" value="notspam"><input type="hidden" name="type" value="${type}"><input type="hidden" name="id" value="${id}"><input type="hidden" name="csrf" value="${generateCSRFToken(req.cookies['tw-comments-login'], id, 'notspam')}"><button name="submitBtn" type="submit">Not Spam</button></form>`;
 			}
 			
+			res.set('Content-Type', 'text/html');
 			res.end(`<style>form {display: inline-block;margin-right: 16px;}</style><h1>Comment Moderation</h1><h3>${id}</h3><hr>Name: ${data[0].name}<br>Time: ${data[0].time}<br>Comment: ${data[0].comment}<hr><form method="POST" action="/moderate" id="deleteForm"><input type="hidden" name="action" value="delete"><input type="hidden" name="type" value="${type}"><input type="hidden" name="id" value="${id}"><input type="hidden" name="csrf" value="${generateCSRFToken(req.cookies['tw-comments-login'], id, 'delete')}"><button name="submitBtn" type="submit">Delete</button></form>${notSpamBtn}`);
 		} else {
 			res.end('Comment not found in database');
